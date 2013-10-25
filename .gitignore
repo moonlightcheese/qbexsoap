@@ -1,0 +1,8 @@
+ant.properties
+build.xml
+local.properties
+.idea/
+.idea/**
+*.iml
+out/
+out/**
