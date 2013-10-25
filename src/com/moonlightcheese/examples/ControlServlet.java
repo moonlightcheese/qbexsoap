@@ -3,30 +3,97 @@ package com.moonlightcheese.examples;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+//import javax.swing.text.Document;
+import javax.xml.soap.*;
+//import javax.xml.messaging.*;
 import java.io.*;
 import java.rmi.RemoteException;
+import java.util.Iterator;
 
 import com.intuit.developer.ArrayOfString;
 import com.intuit.developer.AuthResponse;
 import com.intuit.developer.QBWebConnectorSvcSoap;
 
+import org.w3c.dom.Document;
+
 /**
  * Created with IntelliJ IDEA.
- * User: jarrod
+ * User: jarrod & larry at the Coding Dungeon
  * Date: 10/24/13
  * Time: 7:25 PM
  * To change this template use File | Settings | File Templates.
  */
 public class ControlServlet extends HttpServlet implements QBWebConnectorSvcSoap {
     public void doPost(HttpServletRequest request, HttpServletResponse response) {
+        //SOAPElement soapElementUsername =
+        //printOutput(request, response);
+        readSoapMessage(request);
+
+        //authenticate2(soapAuthStrUserName, soapAuthStrPassword);
+    }
+
+    public void doGet(HttpServletRequest request, HttpServletResponse response) {
         printOutput(request, response);
     }
 
-    //public void doGet(HttpServletRequest request, HttpServletResponse response) {
-    //    printOutput(request, response);
-    //}
+    private void readSoapMessage(HttpServletRequest request) {
+        //read SOAP message from BufferedReader
+        /*
+        String message = new String();
+        while(soapReader != null){
+            try {
+                if(message!=null){
+                    //read string to find callback tags. Store as appropriate. maybe use jaxb?
+                    message = soapReader.readLine();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.print("Error Reading soap message");
+            }
+        }
+        */
 
-    public void printOutput(HttpServletRequest request, HttpServletResponse response) {
+        //analyze SOAP Message body
+        MessageFactory factory = null;
+        try {
+            factory = MessageFactory.newInstance();
+        } catch(SOAPException se) {
+            se.printStackTrace();
+        }
+        if(factory!=null) {
+            try {
+                SOAPMessage soapMessage = factory.createMessage(new MimeHeaders(), request.getInputStream());
+                Document document = soapMessage.getSOAPBody().extractContentAsDocument();
+                document.getElementsByTagName("authenticate");
+                //System.out.println(soapMessage.getSOAPPart().getEnvelope().getBody().getElementName().getLocalName());
+                //System.out.println(document.getDocumentElement().getElementsByTagName("authenticate").getLength());
+                System.out.println(document.getDocumentElement().getLocalName());
+                String nameXML = document.getDocumentElement().getLocalName();
+                String userNameXML;
+                String userPassXML;
+                if (nameXML.equals("authenticate")){
+
+                    if(document.getFirstChild().getFirstChild().getLocalName().equals("strUserName")) {
+                        System.out.println("Username: ");
+                        userNameXML = document.getFirstChild().getFirstChild().getTextContent();
+                        userPassXML = document.getFirstChild().getFirstChild().getNextSibling().getTextContent();
+                        System.out.println("userPassXML: "+userPassXML + "\n"+ "userNameXML: " + userNameXML);
+                        authenticate2(userNameXML, userPassXML);
+
+                    }
+
+                    System.out.println(document.getFirstChild().getFirstChild().getTextContent());
+                }
+            } catch (SOAPException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    private void printOutput(HttpServletRequest request, HttpServletResponse response) {
         PrintWriter out = null;
         try {
             out =  response.getWriter();
@@ -60,42 +127,57 @@ public class ControlServlet extends HttpServlet implements QBWebConnectorSvcSoap
         }
     }
 
-    public void authentication(){
-
-    }
-
     @Override
     public AuthResponse authenticate2(String strUserName, String strPassword) throws RemoteException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        AuthResponse authResponse = new AuthResponse();
+        String sessionToken = authResponse.getSessionTicket();
+        System.out.println(sessionToken);
+        return authResponse;
     }
 
     @Override
     public ArrayOfString authenticate(String strUserName, String strPassword) throws RemoteException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+
+
+        String[] asRtn = new String[2];
+        asRtn[0] = "{57F3B9B1-86F1-4fcc-B1EE-566DE1813D20}"; //myGUID.toString(); comes from tails qwcfile
+        asRtn[1] = strPassword;//"none"; //probably password from qwc
+        System.out.println("In authenticate new two");
+        ArrayOfString asRtn2 = new ArrayOfString(asRtn);
+        System.out.println("In authenticate step2");
+        System.out.println("In authenticate as[0] = " + asRtn2.getString(0));
+        System.out.println("In authenticate as[1] = " + asRtn2.getString(1));
+        return asRtn2;
+
+
+
+
     }
 
     @Override
     public String sendRequestXML(String ticket, String strHCPResponse, String strCompanyFileName, String qbXMLCountry, int qbXMLMajorVers, int qbXMLMinorVers) throws RemoteException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
     public int receiveResponseXML(String ticket, String response, String hresult, String message) throws RemoteException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return -3;
     }
 
     @Override
     public String connectionError(String ticket, String hresult, String message) throws RemoteException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
     public String getLastError(String ticket) throws RemoteException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
     public String closeConnection(String ticket) throws RemoteException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        System.out.println("In closeConnection");
+        System.out.println(ticket);
+        return("close with this message");
     }
 }
