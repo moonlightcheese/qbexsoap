@@ -29,14 +29,22 @@ public class ControlServlet extends HttpServlet implements QBWebConnectorSvcSoap
         //printOutput(request, response);
         readSoapMessage(request);
 
-        //authenticate2(soapAuthStrUserName, soapAuthStrPassword);
+        //System.out.print(response.toString());
+        //authenticate(soapAuthStrUserName, soapAuthStrPassword);
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) {
         printOutput(request, response);
+
+
+
     }
 
     private void readSoapMessage(HttpServletRequest request) {
+
+        System.out.println("Entering readSoapMessage");
+        if (System.getProperty("com.sun.management.jmxremote") == null)
+            System.out.println("JMX remote is disabled");
         //read SOAP message from BufferedReader
         /*
         String message = new String();
@@ -74,7 +82,7 @@ public class ControlServlet extends HttpServlet implements QBWebConnectorSvcSoap
                 if (nameXML.equals("authenticate")){
 
                     if(document.getFirstChild().getFirstChild().getLocalName().equals("strUserName")) {
-                        System.out.println("Username: ");
+                        System.out.println("Username: " );
                         userNameXML = document.getFirstChild().getFirstChild().getTextContent();
                         userPassXML = document.getFirstChild().getFirstChild().getNextSibling().getTextContent();
                         System.out.println("userPassXML: "+userPassXML + "\n"+ "userNameXML: " + userNameXML);
@@ -97,15 +105,18 @@ public class ControlServlet extends HttpServlet implements QBWebConnectorSvcSoap
         PrintWriter out = null;
         try {
             out =  response.getWriter();
+
         } catch(Exception e) {
             //wut...
         }
         if(out!=null) {
 
-            File logFile = new File("C:\\tomcat\\webapplog.txt");
+            File logFile = new File("webapplog.txt");
             try {
-                if(!logFile.exists())
+                if(!logFile.exists()){
                     logFile.createNewFile();
+                    out.print("Log File Created");
+                }
                 BufferedWriter writer = new BufferedWriter(new FileWriter(logFile, true));
                 BufferedReader reader = request.getReader();
                 try {
@@ -124,6 +135,7 @@ public class ControlServlet extends HttpServlet implements QBWebConnectorSvcSoap
             }
             out.println(request.toString());
             //out.println("something else :P");
+            System.out.println("printOutput() method complete...");
         }
     }
 
@@ -138,19 +150,26 @@ public class ControlServlet extends HttpServlet implements QBWebConnectorSvcSoap
     @Override
     public ArrayOfString authenticate(String strUserName, String strPassword) throws RemoteException {
 
+        String evLogTxt="WebMethod: authenticate() has been called by QBWebconnector" + " " ;
+       /* evLogTxt=evLogTxt+"Parameters received:
+        evLogTxt=evLogTxt+"string strUserName = " + strUserName + "
+        evLogTxt=evLogTxt+"string strPassword = " + strPassword + "
+        evLogTxt=evLogTxt+"*/
 
-        String[] asRtn = new String[2];
-        asRtn[0] = "{57F3B9B1-86F1-4fcc-B1EE-566DE1813D20}"; //myGUID.toString(); comes from tails qwcfile
-        asRtn[1] = strPassword;//"none"; //probably password from qwc
+        String[] asRtn = new String[4];
+
+        asRtn[0] = "CDCGrill";
+        asRtn[1] = "60"; //"{57F3B9B1-86F1-4fcc-B1EE-566DE1813D20}"; //myGUID.toString(); comes from tails qwcfile
+        //asRtn[2] = strPassword;//"none"; //probably password from qwc
         System.out.println("In authenticate new two");
         ArrayOfString asRtn2 = new ArrayOfString(asRtn);
         System.out.println("In authenticate step2");
         System.out.println("In authenticate as[0] = " + asRtn2.getString(0));
         System.out.println("In authenticate as[1] = " + asRtn2.getString(1));
+
+
+
         return asRtn2;
-
-
-
 
     }
 
