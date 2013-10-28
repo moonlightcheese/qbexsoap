@@ -196,6 +196,8 @@ public class ControlServlet extends HttpServlet implements QBWebConnectorSvcSoap
     //Stops being called after recieveResponseXML returns 100
     @Override
     public String sendRequestXML(String ticket, String strHCPResponse, String strCompanyFileName, String qbXMLCountry, int qbXMLMajorVers, int qbXMLMinorVers) throws RemoteException {
+        //strHCPResponse //holds HostQuery,CompanyQuery,PreferencesQuery... or an empty string
+        
         return null;
     }
 
