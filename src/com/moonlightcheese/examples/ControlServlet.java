@@ -158,6 +158,8 @@ public class ControlServlet extends HttpServlet implements QBWebConnectorSvcSoap
         return authResponse;
     }
 
+
+
     @Override
     public ArrayOfString authenticate(String strUserName, String strPassword) throws RemoteException {
 
@@ -166,12 +168,19 @@ public class ControlServlet extends HttpServlet implements QBWebConnectorSvcSoap
         evLogTxt=evLogTxt+"string strUserName = " + strUserName + "
         evLogTxt=evLogTxt+"string strPassword = " + strPassword + "
         evLogTxt=evLogTxt+"*/
-
+        boolean workToDo = false;
         String[] asRtn = new String[4];
 
-        asRtn[0] = "CDCGrill";
-        asRtn[1] = "60"; //"{57F3B9B1-86F1-4fcc-B1EE-566DE1813D20}"; //myGUID.toString(); comes from tails qwcfile
-        //asRtn[2] = strPassword;//"none"; //probably password from qwc
+        asRtn[0] = "CDCGrill"; //session token always in member 1 could be GUID or anything to identify the session
+        if (strUserName==null || strPassword==null) //invalid user name or password
+            asRtn[1] = "nvu"; //"{57F3B9B1-86F1-4fcc-B1EE-566DE1813D20}"; //myGUID.toString(); comes from tails qwcfile
+        else if(workToDo != true)//no work to do supply "none"
+            asRtn[2] = "none";
+        else if(workToDo = true);//work to do supply pathname of the company to be used in the current update.
+            asRtn[2] = ""; //pathname of company to be used :: an empty string specifies to use currently opened client
+            asRtn[3] = "1"; //Optional member :: number of seconds to wait before update
+            asRtn[4] = ""; //Optional member :: contains the number of seconds to be used as the MinimumRunEveryNSeconds telling QBWC how frequently your web server needs communication.
+
         System.out.println("In authenticate new two");
         ArrayOfString asRtn2 = new ArrayOfString(asRtn);
         System.out.println("In authenticate step2");
