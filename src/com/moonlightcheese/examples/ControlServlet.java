@@ -139,6 +139,8 @@ public class ControlServlet extends HttpServlet implements QBWebConnectorSvcSoap
         }
     }
 
+    //TODO add clientVersion method here.
+
     @Override
     public AuthResponse authenticate2(String strUserName, String strPassword) throws RemoteException {
         AuthResponse authResponse = new AuthResponse();
@@ -173,11 +175,13 @@ public class ControlServlet extends HttpServlet implements QBWebConnectorSvcSoap
 
     }
 
+    //Stops being called after recieveResponseXML returns 100
     @Override
     public String sendRequestXML(String ticket, String strHCPResponse, String strCompanyFileName, String qbXMLCountry, int qbXMLMajorVers, int qbXMLMinorVers) throws RemoteException {
         return null;
     }
 
+    //return a 100 means 100% completed and QBWC will stop calling sendRequestXML()
     @Override
     public int receiveResponseXML(String ticket, String response, String hresult, String message) throws RemoteException {
         return -3;
