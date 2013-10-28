@@ -139,7 +139,16 @@ public class ControlServlet extends HttpServlet implements QBWebConnectorSvcSoap
         }
     }
 
-    //TODO add clientVersion method here.
+    //TODO add clientVersion method here. return empty string to continue? per QB...
+    public String clientVersion(HttpServletRequest request, HttpServletResponse response){
+        String rtnStr = ""; //Empty string to continue.
+        String rtnWString = "W:"; // warning string
+        String rtnEString = "E:"; // Error string
+        String rtnOString = "O:"; //Require QBWC version string
+
+
+        return rtnStr;
+    }
 
     @Override
     public AuthResponse authenticate2(String strUserName, String strPassword) throws RemoteException {
