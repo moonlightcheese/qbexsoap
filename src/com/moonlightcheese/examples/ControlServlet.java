@@ -21,9 +21,15 @@ import org.w3c.dom.Document;
  * User: jarrod & larry at the Coding Dungeon
  * Date: 10/24/13
  * Time: 7:25 PM
- * To change this template use File | Settings | File Templates.
+ * 
  */
 public class ControlServlet extends HttpServlet implements QBWebConnectorSvcSoap {
+
+    /**
+     *
+     * @param request
+     * @param response
+     */
     public void doPost(HttpServletRequest request, HttpServletResponse response) {
         //SOAPElement soapElementUsername =
         //printOutput(request, response);
@@ -33,6 +39,11 @@ public class ControlServlet extends HttpServlet implements QBWebConnectorSvcSoap
         //authenticate(soapAuthStrUserName, soapAuthStrPassword);
     }
 
+    /**
+     *
+     * @param request
+     * @param response
+     */
     public void doGet(HttpServletRequest request, HttpServletResponse response) {
         printOutput(request, response);
 
@@ -40,29 +51,15 @@ public class ControlServlet extends HttpServlet implements QBWebConnectorSvcSoap
 
     }
 
+    /**
+     *
+     * @param request
+     */
     private void readSoapMessage(HttpServletRequest request) {
-
-        System.out.println("Entering readSoapMessage");
-        if (System.getProperty("com.sun.management.jmxremote") == null)
-            System.out.println("JMX remote is disabled");
-        //read SOAP message from BufferedReader
-        /*
-        String message = new String();
-        while(soapReader != null){
-            try {
-                if(message!=null){
-                    //read string to find callback tags. Store as appropriate. maybe use jaxb?
-                    message = soapReader.readLine();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.out.print("Error Reading soap message");
-            }
-        }
-        */
 
         //analyze SOAP Message body
         MessageFactory factory = null;
+
         try {
             factory = MessageFactory.newInstance();
         } catch(SOAPException se) {
@@ -76,9 +73,12 @@ public class ControlServlet extends HttpServlet implements QBWebConnectorSvcSoap
                 //System.out.println(soapMessage.getSOAPPart().getEnvelope().getBody().getElementName().getLocalName());
                 //System.out.println(document.getDocumentElement().getElementsByTagName("authenticate").getLength());
                 System.out.println(document.getDocumentElement().getLocalName());
+
                 String nameXML = document.getDocumentElement().getLocalName();
+
                 String userNameXML;
                 String userPassXML;
+
                 if (nameXML.equals("authenticate")){
 
                     if(document.getFirstChild().getFirstChild().getLocalName().equals("strUserName")) {
@@ -86,7 +86,7 @@ public class ControlServlet extends HttpServlet implements QBWebConnectorSvcSoap
                         userNameXML = document.getFirstChild().getFirstChild().getTextContent();
                         userPassXML = document.getFirstChild().getFirstChild().getNextSibling().getTextContent();
                         System.out.println("userPassXML: "+userPassXML + "\n"+ "userNameXML: " + userNameXML);
-                        authenticate2(userNameXML, userPassXML);
+                        authenticate(userNameXML, userPassXML);
 
                     }
 
@@ -101,6 +101,11 @@ public class ControlServlet extends HttpServlet implements QBWebConnectorSvcSoap
         }
     }
 
+    /**
+     *
+     * @param request
+     * @param response
+     */
     private void printOutput(HttpServletRequest request, HttpServletResponse response) {
         PrintWriter out = null;
         try {
@@ -139,6 +144,12 @@ public class ControlServlet extends HttpServlet implements QBWebConnectorSvcSoap
         }
     }
 
+    /**
+     *
+     * @param request
+     * @param response
+     * @return
+     */
     //TODO add clientVersion method here. return empty string to continue? per QB...
     public String clientVersion(HttpServletRequest request, HttpServletResponse response){
         String rtnStr = ""; //Empty string to continue.
@@ -150,6 +161,13 @@ public class ControlServlet extends HttpServlet implements QBWebConnectorSvcSoap
         return rtnStr;
     }
 
+    /**
+     *
+     * @param strUserName
+     * @param strPassword
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public AuthResponse authenticate2(String strUserName, String strPassword) throws RemoteException {
         AuthResponse authResponse = new AuthResponse();
@@ -159,10 +177,16 @@ public class ControlServlet extends HttpServlet implements QBWebConnectorSvcSoap
     }
 
 
-
+    /**
+     *
+     * @param strUserName
+     * @param strPassword
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public ArrayOfString authenticate(String strUserName, String strPassword) throws RemoteException {
-
+        System.out.print("Entering Authenticate Method");
         String evLogTxt="WebMethod: authenticate() has been called by QBWebconnector" + " " ;
        /* evLogTxt=evLogTxt+"Parameters received:
         evLogTxt=evLogTxt+"string strUserName = " + strUserName + "
@@ -193,30 +217,71 @@ public class ControlServlet extends HttpServlet implements QBWebConnectorSvcSoap
 
     }
 
+    /**
+     *
+     * @param ticket
+     * @param strHCPResponse
+     * @param strCompanyFileName
+     * @param qbXMLCountry
+     * @param qbXMLMajorVers
+     * @param qbXMLMinorVers
+     * @return
+     * @throws RemoteException
+     */
     //Stops being called after recieveResponseXML returns 100
     @Override
     public String sendRequestXML(String ticket, String strHCPResponse, String strCompanyFileName, String qbXMLCountry, int qbXMLMajorVers, int qbXMLMinorVers) throws RemoteException {
         //strHCPResponse //holds HostQuery,CompanyQuery,PreferencesQuery... or an empty string
-        
+
         return null;
     }
 
     //return a 100 means 100% completed and QBWC will stop calling sendRequestXML()
+
+    /**
+     *
+     * @param ticket
+     * @param response
+     * @param hresult
+     * @param message
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public int receiveResponseXML(String ticket, String response, String hresult, String message) throws RemoteException {
         return -3;
     }
 
+    /**
+     *
+     * @param ticket
+     * @param hresult
+     * @param message
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public String connectionError(String ticket, String hresult, String message) throws RemoteException {
         return null;
     }
 
+    /**
+     *
+     * @param ticket
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public String getLastError(String ticket) throws RemoteException {
         return null;
     }
 
+    /**
+     *
+     * @param ticket
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public String closeConnection(String ticket) throws RemoteException {
         System.out.println("In closeConnection");
